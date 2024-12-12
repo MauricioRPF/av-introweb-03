@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<title>Gerenciar Plantas</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>Sistema de Cadastro Botânico</h1>
+  </header>
+  
+  <nav>
+    <ul>
+      <li><a href="index.html">Início</a></li>
+      <li><a href="cadastro.html">Cadastrar Planta</a></li>
+      <li><a href="gerenciamento.html">Gerenciar Plantas</a></li>
+    </ul>
+  </nav>
+  
+  <main>
+    <section>
+      <h2>Gerenciamento das Plantas</h2>
+      <button id="btnImprimir">Imprimir Lista</button>
+      <table id="tabelaPlantas">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Espécie</th>
+            <th>Data de Plantio</th>
+            <th>Localização</th>
+            <th>Altura (cm)</th>
+            <th>Observações</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Linhas serão inseridas dinamicamente -->
+        </tbody>
+      </table>
+    </section>
+    
+    <section id="editarSecao" style="display:none;">
+      <h2>Editar Planta</h2>
+      <form id="formEdicao">
+        <input type="hidden" id="editId">
+        
+        <div class="form-group">
+          <label for="editNome">Nome da Planta:</label>
+          <input type="text" id="editNome" required pattern="^[A-Za-zÀ-ú\s]+$">
+        </div>
+        
+        <div class="form-group">
+          <label for="editEspecie">Espécie:</label>
+          <input type="text" id="editEspecie" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="editDataPlantio">Data de Plantio:</label>
+          <input type="date" id="editDataPlantio" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="editLocalizacao">Localização:</label>
+          <input type="text" id="editLocalizacao" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="editAltura">Altura (cm):</label>
+          <input type="text" id="editAltura" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="editObservacoes">Observações:</label>
+          <textarea id="editObservacoes"></textarea>
+        </div>
+        
+        <button type="submit">Salvar Alterações</button>
+        <button type="button" id="cancelarEdicao">Cancelar</button>
+      </form>
+    </section>
+  </main>
+  
+  <footer>
+    <p>Desenvolvido para avaliação técnica - Exemplo</p>
+  </footer>
+  
+  <script>
+    const tabela = document.getElementById('tabelaPlantas').querySelector('tbody');
+    const btnImprimir = document.getElementById('btnImprimir');
+    const editarSecao = document.getElementById('editarSecao');
+    const formEdicao = document.getElementById('formEdicao');
+    const cancelarEdicao = document.getElementById('cancelarEdicao');
+    
+    let plantas = {};
+    
+    async function carregarPlantas() {
+      try {
+        const response = await fetch('https://my-db-4ce9d-default-rtdb.firebaseio.com/plantas.json');
+        if (response.ok) {
+          const data = await response.json();
+          plantas = data ? data : {};
+          renderizarTabela();
+        } else {
+          alert('Erro ao carregar dados.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Falha na conexão com o banco de dados.');
+      }
+    }
+    
+    function renderizarTabela() {
+      tabela.innerHTML = '';
+      if (!plantas) return;
+      for (const id in plantas) {
+        const p = plantas[id];
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+          <td>${p.nome}</td>
+          <td>${p.especie}</td>
+          <td>${p.dataPlantio}</td>
+          <td>${p.localizacao}</td>
+          <td>${p.altura}</td>
+          <td>${p.observacoes ? p.observacoes : ''}</td>
+          <td>
+            <button class="btnEditar" data-id="${id}">Editar</button>
+            <button class="btnRemover" data-id="${id}">Remover</button>
+          </td>
+        `;
+        
+        tabela.appendChild(tr);
+      }
+      
+      const btnsEditar = document.querySelectorAll('.btnEditar');
+      const btnsRemover = document.querySelectorAll('.btnRemover');
+      
+      btnsEditar.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const id = e.target.getAttribute('data-id');
+          editarPlanta(id);
+        });
+      });
+      
+      btnsRemover.forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.target.getAttribute('data-id');
+          if (confirm('Deseja remover esta planta?')) {
+            await removerPlanta(id);
+          }
+        });
+      });
+    }
+    
+    async function removerPlanta(id) {
+      try {
+        const response = await fetch(`https://my-db-4ce9d-default-rtdb.firebaseio.com/plantas/${id}.json`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          delete plantas[id];
+          renderizarTabela();
+        } else {
+          alert('Erro ao remover planta.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Falha na conexão com o banco de dados.');
+      }
+    }
+    
+    function editarPlanta(id) {
+      const p = plantas[id];
+      document.getElementById('editId').value = id;
+      document.getElementById('editNome').value = p.nome;
+      document.getElementById('editEspecie').value = p.especie;
+      document.getElementById('editDataPlantio').value = p.dataPlantio;
+      document.getElementById('editLocalizacao').value = p.localizacao;
+      document.getElementById('editAltura').value = p.altura;
+      document.getElementById('editObservacoes').value = p.observacoes ? p.observacoes : '';
+      
+      editarSecao.style.display = 'block';
+    }
+    
+    formEdicao.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const id = document.getElementById('editId').value;
+      const nome = document.getElementById('editNome').value.trim();
+      const especie = document.getElementById('editEspecie').value.trim();
+      const dataPlantio = document.getElementById('editDataPlantio').value;
+      const localizacao = document.getElementById('editLocalizacao').value.trim();
+      const altura = document.getElementById('editAltura').value.trim();
+      const observacoes = document.getElementById('editObservacoes').value.trim();
+      
+      if(!nome || !especie || !dataPlantio || !localizacao || !altura) {
+        alert("Por favor, preencha todos os campos obrigatórios.");
+        return;
+      }
+      
+      const nomeRegex = /^[A-Za-zÀ-ú\s]+$/;
+      if(!nomeRegex.test(nome)){
+        alert("O nome da planta deve conter apenas letras.");
+        return;
+      }
+      
+      const plantaAtualizada = {
+        nome,
+        especie,
+        dataPlantio,
+        localizacao,
+        altura: parseInt(altura,10),
+        observacoes
+      };
+      
+      try {
+        const response = await fetch(`https://my-db-4ce9d-default-rtdb.firebaseio.com/plantas/${id}.json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(plantaAtualizada)
+        });
+        
+        if(response.ok) {
+          plantas[id] = plantaAtualizada;
+          renderizarTabela();
+          editarSecao.style.display = 'none';
+        } else {
+          alert('Erro ao atualizar planta.');
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Falha na conexão com o banco de dados.');
+      }
+    });
+    
+    cancelarEdicao.addEventListener('click', () => {
+      editarSecao.style.display = 'none';
+    });
+    
+    btnImprimir.addEventListener('click', () => {
+      window.print();
+    });
+    
+    // Máscara no campo editAltura (somente números)
+    const editAltura = document.getElementById('editAltura');
+    editAltura.addEventListener('input', () => {
+      editAltura.value = editAltura.value.replace(/\D/g,'');
+    });
+    
+    // Carrega os dados inicialmente
+    carregarPlantas();
+  </script>
+</body>
+</html>
