@@ -28,7 +28,7 @@ form.addEventListener('submit', async (e) => {
     alert("O nome da planta deve conter apenas letras.");
     return;
   }
-  
+  // Criação do objeto nova planta
   const novaPlanta = {
     nome,
     especie,
@@ -37,7 +37,7 @@ form.addEventListener('submit', async (e) => {
     altura: parseInt(altura, 10),
     observacoes
   };
-  
+  // Envio dos dados para o banco de dados
   try {
     const response = await fetch('https://my-db-4ce9d-default-rtdb.firebaseio.com/plantas.json', {
       method: 'POST',
@@ -53,6 +53,7 @@ form.addEventListener('submit', async (e) => {
     } else {
       alert('Erro ao cadastrar a planta!');
     }
+  // Tratamento de erros
   } catch (error) {
     console.error(error);
     alert('Falha na conexão com o banco de dados.');
