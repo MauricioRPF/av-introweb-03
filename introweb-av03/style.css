@@ -1,0 +1,150 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    
+  }
+  
+  header, nav, main, footer {
+    padding: 10px;
+  }
+  
+  header {
+    background: #85dcdf;
+    color: #fff;
+    text-align: center;
+    
+  }
+
+  #main_container{
+    
+    position: absolute;
+    background-image: url(./assets/seamless-tropical-rainforest-jungle-forest-julien.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    width: 100%;
+    height: 85%;
+    color:white;
+
+  }
+
+
+
+  nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    background: #ddd;
+  }
+  
+  nav ul li {
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #333;
+  }
+  
+  nav ul li a:hover {
+    background: #ccc;
+  }
+  
+  main {
+    padding: 20px;
+    
+  }
+
+  .form-register{ 
+    margin-top: 50px;
+    width: 300px;
+    padding: 16px;
+    color: #c4980a;
+    background-color: rgba(0, 0, 0, 0.938);
+    border-radius: 10px;
+    border: 2px solid #c4980a;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.input-register[type='text'],[type='date']{
+    width :90%;
+    padding :10px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border:hsl(from color h s l);
+    background: rgb(184, 184, 184);
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+.input-register[type='date']{
+    text-align: center;
+}
+  
+  
+  
+  .table-container {
+    width: 100%;
+    overflow-x: auto; /* allows horizontal scroll if needed */
+    margin-top: 20px;
+    border: 1px solid #866405; /* optional border around container */
+    
+    border-radius: 6px;     /* optional rounding of container corners */
+    color: #000;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 600px;  /* a min-width ensures columns have some space */
+    background-color: #F5F5DC;
+  }
+  
+  table th, table td {
+    border: 2px solid #866405;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  table th {
+    background: #224b01;
+    color:white
+  }
+  
+  /* OPTIONAL: Keep a small media query for styling, but don't break the table into blocks */
+  @media (max-width: 600px) {
+    /* Example: Just reduce font-size or padding, but do not change display to block */
+    table th, table td {
+      padding: 6px;
+      font-size: 14px;
+    }
+  }
+  
+  /* Estilo de impressão */
+  @media print {
+    header, nav, footer, #editarSecao, #btnImprimir {
+      display: none !important;
+    }
+    
+    /* Printing a full-size table with a border */
+    .table-container {
+      border: none;
+      overflow: visible; /* no scroll in print */
+    }
+    table {
+      border: 1px solid #000;
+      min-width: unset; /* table can stretch on print */
+    }
+    table th, table td {
+      border: 1px solid #000;
+    }
+    
+    body {
+      margin: 0;
+    }
+  }
